@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = {
   entry: './src/main.ts',
   output: {
+    filename: 'content.js',
     path: path.resolve(__dirname, './build'),
   },
   module: {
@@ -26,6 +27,25 @@ module.exports = {
           'vue-style-loader',
           'css-loader'
         ]
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          'vue-style-loader',
+          'css-loader',
+          'sass-loader'
+        ]
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        use: [
+          {
+            loader: 'url-loader',
+          },
+          {
+            loader: 'file-loader'
+          }
+        ],
       }
     ]
   },

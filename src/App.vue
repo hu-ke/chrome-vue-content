@@ -1,11 +1,11 @@
 <template>
-    <div>Vue app213</div>
-  </template>
+  <div>
+    <LoginDiv />
+    <!-- <SearchOver /> -->
+  </div>
+</template>
   
-  <script lang="ts">
-  import { defineComponent } from 'vue'
-  
-  export default defineComponent({
-    template: `<div>adf</div>`
-  })
-  </script>
+<script setup lang="ts">
+import SearchOver from './pages/searchOver/index.vue'
+import LoginDiv from './pages/loginDiv/index.vue';
+</script>
