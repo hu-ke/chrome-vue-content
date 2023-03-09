@@ -1,8 +1,7 @@
 <template>
     <div id="maskDrag" class="ui-widget-content">
         <div style="position: relative;">
-            <!-- <div class="header-circle"></div> -->
-            <img :src="require('../../assets/images/drag-icon.png')" alt="">
+            <div class="header-circle"></div>
             <!-- <iframe id="iframe-wishlist" height="720" width="375" title="three part login"></iframe> -->
             <iframe style="border: none;" id="iframe-wishlist" height="720" width="375" src="http://localhost:5173/plugin/home" title="three part login"></iframe>
         </div>
@@ -81,7 +80,7 @@ export default defineComponent({
   background-repeat: no-repeat;
   background-position: center;
   left: 293px;
-  // background-image: url('../../assets/images/drag-icon.png');
+  background-image: url('../../assets/drag-icon.png');
 }
 
 @keyframes fadeInRight {

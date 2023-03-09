@@ -149,14 +149,14 @@ export default defineComponent({
                     image.src = imgSrc
                     image.setAttribute("crossOrigin",'Anonymous')
                     image.onload = function () {
-                        boxes.forEach((box: any) => {
-                            params.push(getImgBox(this, box));
-                        });
-                        console.log('params>>', params)
-                        // @ts-ignore
-                        document.getElementById('iframe-searchOver').contentWindow.postMessage({type: 'returnLookListParams', data: {
-                            params
-                        }}, '*');
+                        // boxes.forEach((box: any) => {
+                        //     params.push(getImgBox(this, box));
+                        // });
+                        // console.log('params>>', params)
+                        // // @ts-ignore
+                        // document.getElementById('iframe-searchOver').contentWindow.postMessage({type: 'returnLookListParams', data: {
+                        //     params
+                        // }}, '*');
                     };
                 }
                 if (data.getLookImgDataUrl) {
