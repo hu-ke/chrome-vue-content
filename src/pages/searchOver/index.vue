@@ -1,5 +1,5 @@
 <template>
-    <iframe 
+    <!-- <iframe 
         v-show="iframeVisible"
         id="iframe-searchOver"
         height="100%" 
@@ -8,7 +8,7 @@
         title="search"
         :src="`${url}/plugin/search`"
     >
-    </iframe>
+    </iframe> -->
 </template>
  
 <script lang="ts">
@@ -22,7 +22,6 @@ export default defineComponent({
     setup(props) {
         const iframeVisible = ref(false)
         const url = ref('http://localhost:5173')
-
         const fetchImgNewUrl = async(url: string, flag: boolean) => {
             const res = await FetchGraphql(`
                 query uploadImg4GoogleWishList {
@@ -148,19 +147,19 @@ export default defineComponent({
                     const image = new Image();
                     image.src = imgSrc
                     image.setAttribute("crossOrigin",'Anonymous')
-                    image.onload = function () {
-                        // boxes.forEach((box: any) => {
-                        //     params.push(getImgBox(this, box));
-                        // });
-                        // console.log('params>>', params)
-                        // // @ts-ignore
-                        // document.getElementById('iframe-searchOver').contentWindow.postMessage({type: 'returnLookListParams', data: {
-                        //     params
-                        // }}, '*');
-                    };
+                    // image.onload = function () {
+                    //     boxes.forEach((box: any) => {
+                    //         params.push(getImgBox(this, box));
+                    //     });
+                    //     console.log('params>>', params)
+                    //     // @ts-ignore
+                    //     document.getElementById('iframe-searchOver').contentWindow.postMessage({type: 'returnLookListParams', data: {
+                    //         params
+                    //     }}, '*');
+                    // };
                 }
                 if (data.getLookImgDataUrl) {
-                    const {selectBox, imgSize} = data
+                    const {selectBox, imgSize} = data as any; // eslint-disable-line
                     const image = new Image();
                     image.src = data.imgSrc;
                     image.setAttribute("crossOrigin",'Anonymous')

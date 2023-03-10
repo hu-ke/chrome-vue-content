@@ -1,18 +1,20 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "esnext",
     "module": "esnext",
-    "noImplicitAny": false,
-    "noImplicitThis": true,
-    "noImplicitReturns": true,
-    "jsx": "preserve",
-    "importHelpers": true,
+    "strict": true,
     "moduleResolution": "node",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": true,
     "sourceMap": true,
     "baseUrl": ".",
+    "types": [
+      "webpack-env",
+      "chrome"
+    ],
     "paths": {
       "@/*": [
         "src/*"
