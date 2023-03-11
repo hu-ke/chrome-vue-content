@@ -3,11 +3,11 @@
     <div>
       <img :src="imgSrc" />
     </div>
-    <div>
+    <div @click="$emit('onViewMore')">
       <p>See all the products you search</p>
       <p class="text-sub">There are lower prices here!</p>
     </div>
-    <div class="right-folder-button">
+    <div class="right-folder-button" @click="$emit('onViewMore')">
       View More
     </div>
     <div class="close-fold-img">

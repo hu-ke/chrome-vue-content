@@ -30,13 +30,19 @@ export default defineComponent({
     setup(props) {
         const url = ref('http://localhost:5173')
 
-        const loadImage = async(srcUrl: string) => {
+        const loadImage = async(srcUrl: string, { needNewUrl=true }) => {
             // 1.先拿到非跨域图片url
-            const msgToSend = await fetchImgNewUrl(srcUrl, true);
-            console.log('msgToSend', msgToSend)
-            if (msgToSend.status) {
+            let response = {
+                status: true,
+                newUrl: srcUrl
+            } as any;
+            if (needNewUrl) {
+                response = await fetchImgNewUrl(srcUrl);
+            }
+            console.log('response', response)
+            if (response.status) {
                 // 2.图片url转为file
-                const file = await imgUrlToFile(msgToSend.newUrl)
+                const file = await imgUrlToFile(response.newUrl)
 
                 console.log('2.图片url转为file', file)
                 const res = await fetchUploadTokens()
@@ -54,7 +60,7 @@ export default defineComponent({
                     let res = await getIframeUrl() || ''
                     // @ts-ignore
                     document.getElementById('iframe-searchOver').contentWindow.postMessage({type: 'searchOver', data: {
-                        ...msgToSend,
+                        ...response,
                         ossUrl,
                         isUSA: res && res.indexOf('us-www') > 0,
                         image: {
@@ -66,7 +72,7 @@ export default defineComponent({
                 };
             }
         }
-        const fetchImgNewUrl = async(url: string, flag: boolean) => {
+        const fetchImgNewUrl = async(url: string) => {
             const res = await FetchGraphql(`
                 query uploadImg4GoogleWishList {
                     uploadImg4GoogleWishList(url: "${url}"){
@@ -76,10 +82,9 @@ export default defineComponent({
                     }
                 }
                 `, null)
-                return {
+            return {
                 newUrl: `https://${res?.data?.uploadImg4GoogleWishList?.newUrl}`,
                 status: res?.data?.uploadImg4GoogleWishList?.status,
-            //   tabId: tabId,
             }
         }
 

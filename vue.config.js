@@ -6,6 +6,7 @@ module.exports = defineConfig({
   filenameHashing: false,
   configureWebpack: {
     optimization: {
+      // minimize: false, // 不要压缩，便于定位问题
       splitChunks: {
         minChunks: 1,
       }

@@ -1,56 +1,68 @@
 <template>
     <SearchOver ref="searchOverRef" :iframeVisible="searchOverVisible"/>
     <LoginDiv :iframeVisible="loginVisible"/>
-    <LessComp :visible="lessCompVisible" :imgSrc="mainImgSrc" @onClose="onLessClose"/>
+    <Screenshot :visible="screenshotVisible"/>
+    <LessComp :visible="lessCompVisible" :imgSrc="mainImgSrc" @onClose="onLessClose" @onViewMore="onViewMore"/>
 </template>
  
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
-import SearchOver from '../searchOver/index.vue'
-import LoginDiv from '../loginDiv/index.vue';
+import SearchOver from '@/pages/searchOver/index.vue'
+import LoginDiv from '@/pages/loginDiv/index.vue';
+import Screenshot from '@/pages/screenshot/index.vue';
 import LessComp from '@/components/LessComp.vue';
 export default defineComponent({
     components: {
         SearchOver,
         LoginDiv,
-        LessComp
+        LessComp,
+        Screenshot
     },
     setup(props) {
         const searchOverRef = ref()
         const searchOverVisible = ref(false)
         const loginVisible = ref(false)
+        const screenshotVisible = ref(false)
         const lessCompVisible = ref(false)
         const mainImgSrc = ref('')
 
-        const onLessClose = () => {
-            console.log('on less close')
+        const onViewMore = () => {
             searchOverVisible.value = true
+            onLessClose();
+        }
+
+        const onLessClose = () => {
             lessCompVisible.value = false
         }
 
         // @ts-ignore
-        const handleMessage = async ({ type, data, option }) => {
+        const handleIframeMessage = async ({ type, data, option }) => {
             if(type === 'openScreenshot'){
-                // userUtils.showLoginDiv({hide: true})
-                // setTimeout(()=>{
-                // chrome.runtime.sendMessage({ operation: 'captureVisibleTab' }, async function (res) {
-                //     $('#identifyIcon').remove()
-                //     $('#iframe-search').css({ display: 'block' })
-                //     document.getElementById('iframe-search').contentWindow.postMessage({ type: 'screenshot', data: res, option: 'showLoginDiv' }, '*');
-                //     setTimeout(()=>{
-                //     document.getElementById('iframe-search').focus()
-                //     }, 100)
-                // });
-                // }, 100)
+                loginVisible.value = false
+                screenshotVisible.value = true
+                setTimeout(()=>{
+                    chrome.runtime.sendMessage({ operation: 'captureVisibleTab' }, async function (res) {
+                        // $('#identifyIcon').remove()
+                        //@ts-ignore
+                        document.getElementById('iframe-screenshot').contentWindow.postMessage({ type: 'screenshot', data: res, option: 'showLoginDiv' }, '*');
+                        setTimeout(()=>{
+                            //@ts-ignore
+                            document.getElementById('iframe-screenshot').focus()
+                        }, 100)
+                    });
+                }, 100)
             }
             if(type === 'screenshotCancel'){
-                // $('#iframe-search').css({ display: 'none' })
-                // if(option) userUtils.showLoginDiv()
+                screenshotVisible.value = false
             }
             if(type === 'screenshotSearch'){
-                // $('#iframe-search').css({ display: 'none' })
-                // getImgNewUrl(data, false)
-                // if(option) userUtils.showLoginDiv()
+                screenshotVisible.value = false
+                searchOverVisible.value = true
+                try {
+                searchOverRef.value.loadImage(data, {needNewUrl: false})
+                } catch (e) {
+                    console.log('err', e)
+                }
             }
             if(type === 'getIframeENV'){
                 // const {countryHttpENV} = await chrome.storage.sync.get('countryHttpENV')
@@ -69,7 +81,7 @@ export default defineComponent({
         // 接受iframe消息
         const initIframeListener = () => {
             window.addEventListener('message', (e) => {
-                console.log('message from iframe', e.data)
+                console.log('[content.js]. message from iframe', e.data)
                 const {data} = e
                 if (data.showLessClick) {
                     loginVisible.value = false
@@ -79,7 +91,7 @@ export default defineComponent({
                     // foldClickHandle(data.imgSrc) // doesn't work
                 }
                 if(data.isCloseClicked){
-                    // userUtils.showLoginDiv({hide: true})
+                    loginVisible.value = false
                 }
                 if(data.isSearchOverCloseClicked) {
                     searchOverVisible.value = false
@@ -141,31 +153,25 @@ export default defineComponent({
                 if(data.wishlistIframeToken){
                     chrome.storage.sync.set({ wishlistIframeToken: data.wishlistIframeToken })
                 }
-                handleMessage(data)
+                handleIframeMessage(data)
             })
         }
 
         // 接受background.js和popup消息
         const messagesFromBackgroundOrPopup = async(msg: any, sender: any, sendResponse: any) => {
-            console.log('message from bg or popup', msg)
+            console.log('[content.js]. message from bg or popup', msg)
             if (msg.type === 'scanClick') {
                 let srcUrl = msg?.srcUrl ?? '';
                 searchOverVisible.value = true;
                 mainImgSrc.value = srcUrl
-                searchOverRef.value.loadImage(srcUrl)
-                return
+                searchOverRef.value.loadImage(srcUrl, {needNewUrl: true})
+            } else if (msg.type === 'SHOW_LOGIN_DIV') {
+                loginVisible.value = true
             }
-            
-            console.log('[content.js]. Message received', msg);
-        
-            const response = {
-                title: document.title,
-                headlines: Array.from(document.getElementsByTagName<"h1">("h1")).map(h1 => h1.innerText)
-            };
-        
-            console.log('[content.js]. Message response', response);
-        
-            sendResponse(response)
+            // 防止控制台报错：message port closed before a response was received
+            sendResponse({
+                status: 'ok'
+            })
         }
         
         onMounted(() => {
@@ -178,11 +184,13 @@ export default defineComponent({
         })
         
         return {
+            onViewMore,
             onLessClose,
             mainImgSrc,
             lessCompVisible,
             loginVisible,
             searchOverVisible,
+            screenshotVisible,
             searchOverRef
         }
     }
