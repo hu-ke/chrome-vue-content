@@ -68,8 +68,9 @@ export default defineComponent({
                 }
             }
             if(type === 'getIframeENV'){
-                // const {countryHttpENV} = await chrome.storage.sync.get('countryHttpENV')
-                // document.getElementById('iframe-wishlist').contentWindow.postMessage({ type: 'countryHttpENV', data: countryHttpENV }, '*');
+                const {countryHttpENV} = await chrome.storage.sync.get('countryHttpENV')
+                // @ts-ignore
+                document.getElementById('iframe-wishlist').contentWindow.postMessage({ type: 'countryHttpENV', data: countryHttpENV }, '*');
             }
             if(type === 'getWishlistIframeToken'){
                 chrome?.storage.sync.get('wishlistIframeToken').then(({ wishlistIframeToken })=>{
@@ -78,9 +79,10 @@ export default defineComponent({
                     document.getElementById('iframe-wishlist')?.contentWindow.postMessage({ type: 'postWishlistIframeToken', data: wishlistIframeToken }, '*');
                 })
             }
+            // 更新国家
             if(type === 'updateCountryHttpENV'){
-                // chrome.storage.sync.set({'countryHttpENV': data})
-                // chrome.storage.sync.set({'wishlistIframeToken': null})
+                chrome.storage.sync.set({'countryHttpENV': data})
+                chrome.storage.sync.set({'wishlistIframeToken': null})
             }
         }
         // 接受iframe消息
