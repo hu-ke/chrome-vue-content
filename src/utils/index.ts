@@ -1,5 +1,31 @@
 import { Base64 } from "./base64";
 
+export const initMessage = (message: string) => {
+  let Message = document.createElement('div')
+  var text = document.createTextNode(message)
+  Message.appendChild(text)
+  Message.style.position = 'fixed'
+  Message.style.right = '50%'
+  Message.style.bottom = '50%'
+  Message.style.transition = 'all 0.4s ease'
+  Message.style.transform = 'translate(50%, -50%)'
+  Message.style.boxShadow = '1px 1px 5px rgb(0 0 0 / 20%)'
+  Message.style.borderRadius = '100px'
+  Message.style.background = 'rgba(15, 23, 42, 0.9)'
+  Message.style.minHeight = 'auto'
+  Message.style.textAlign = 'center'
+  Message.style.alignItems = 'center'
+  Message.style.padding = '10px 30px'
+  Message.style.color = '#fff'
+  Message.style.zIndex = '2147483646'
+  Message.style.fontSize = '18px'
+  document.body.append(Message)
+  setTimeout(() => {
+    document.body.removeChild(Message)
+  }, 2000)
+}
+
+
 // 图片url格式转为blob格式
 function dataURLtoBlob(dataurl: string, callback: Function) {
     let xhr = new XMLHttpRequest();

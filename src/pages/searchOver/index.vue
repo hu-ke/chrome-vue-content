@@ -12,7 +12,6 @@
 </template>
  
 <script lang="ts">
-import { getImgBox } from '../../utils/imgUtil';
 import { defineComponent, ref } from 'vue';
 import { FetchGraphql, getIframeUrl } from '../../utils/http';
 import { getUrlFormData, imgUrlToFile } from "../../utils/index";
@@ -54,7 +53,6 @@ export default defineComponent({
                 console.log('4.然后上传到oss, 获得新的oss url地址')
                 const image = new Image();
                 image.src = srcUrl;
-                console.log('src>>', srcUrl)
                 image.setAttribute("crossOrigin",'Anonymous')
                 image.onload = async () => {
                     let res = await getIframeUrl() || ''

@@ -6,6 +6,8 @@
 </template>
  
 <script lang="ts">
+import { getImgBox } from '../../utils/imgUtil';
+import { initMessage } from '@/utils/index';
 import { defineComponent, onMounted, ref } from 'vue';
 import SearchOver from '@/pages/searchOver/index.vue'
 import LoginDiv from '@/pages/loginDiv/index.vue';
@@ -69,9 +71,11 @@ export default defineComponent({
                 // document.getElementById('iframe-wishlist').contentWindow.postMessage({ type: 'countryHttpENV', data: countryHttpENV }, '*');
             }
             if(type === 'getWishlistIframeToken'){
-                // chrome.storage.sync.get('wishlistIframeToken').then(({ wishlistIframeToken })=>{
-                // document.getElementById('iframe-wishlist').contentWindow.postMessage({ type: 'postWishlistIframeToken', data: wishlistIframeToken }, '*');
-                // })
+                chrome?.storage.sync.get('wishlistIframeToken').then(({ wishlistIframeToken })=>{
+                    console.log('wishlistIframeToken', wishlistIframeToken)
+                    // @ts-ignore
+                    document.getElementById('iframe-wishlist')?.contentWindow.postMessage({ type: 'postWishlistIframeToken', data: wishlistIframeToken }, '*');
+                })
             }
             if(type === 'updateCountryHttpENV'){
                 // chrome.storage.sync.set({'countryHttpENV': data})
@@ -83,12 +87,15 @@ export default defineComponent({
             window.addEventListener('message', (e) => {
                 console.log('[content.js]. message from iframe', e.data)
                 const {data} = e
+                if (data.refreshWishList) {
+                    console.log('data.refreshWishList', data)
+                    // @ts-ignore
+                    document.getElementById('iframe-wishlist')?.contentWindow.postMessage({type: 'updateWishList'}, '*');
+                }
                 if (data.showLessClick) {
                     loginVisible.value = false
                     searchOverVisible.value = false
                     lessCompVisible.value = true
-                    // console.log('data.imgsrc', data.imgSrc)
-                    // foldClickHandle(data.imgSrc) // doesn't work
                 }
                 if(data.isCloseClicked){
                     loginVisible.value = false
@@ -100,10 +107,11 @@ export default defineComponent({
                     // $('#iframe-wishlist').width(data.popWidth)
                 }
                 if(data.showToastMessage) {
-                    // identifyUtils.initMessage(data.message);
+                    console.log('data.message', data.message)
+                    initMessage(data.message)
                 }
                 if (data.showLoginDiv) {
-                    // userUtils.showLoginDiv()
+                    loginVisible.value = true
                 }
                 if (data.getLookListParams) {
                     const boxes = JSON.parse(data.boxes)
@@ -112,16 +120,15 @@ export default defineComponent({
                     const image = new Image();
                     image.src = imgSrc
                     image.setAttribute("crossOrigin",'Anonymous')
-                    // image.onload = function () {
-                    //     boxes.forEach((box: any) => {
-                    //         params.push(getImgBox(this, box));
-                    //     });
-                    //     console.log('params>>', params)
-                    //     // @ts-ignore
-                    //     document.getElementById('iframe-searchOver').contentWindow.postMessage({type: 'returnLookListParams', data: {
-                    //         params
-                    //     }}, '*');
-                    // };
+                    image.onload = function () {
+                        boxes.forEach((box: any) => {
+                            params.push(getImgBox(this, box));
+                        });
+                        // @ts-ignore
+                        document.getElementById('iframe-searchOver').contentWindow.postMessage({type: 'returnLookListParams', data: {
+                            params
+                        }}, '*');
+                    };
                 }
                 if (data.getLookImgDataUrl) {
                     const {selectBox, imgSize} = data as any; // eslint-disable-line
@@ -151,6 +158,7 @@ export default defineComponent({
                 }
 
                 if(data.wishlistIframeToken){
+                    // 用户从ifram登陆完成后，会发wishlistIframeToken给content                    
                     chrome.storage.sync.set({ wishlistIframeToken: data.wishlistIframeToken })
                 }
                 handleIframeMessage(data)
