@@ -1,6 +1,6 @@
 <template>
     <SearchOver ref="searchOverRef" :iframeVisible="searchOverVisible"/>
-    <LoginDiv :iframeVisible="loginVisible"/>
+    <LoginDiv :iframeVisible="loginVisible" :iframeWishlistWidth="iframeWishlistWidth"/>
     <Screenshot :visible="screenshotVisible"/>
     <LessComp :visible="lessCompVisible" :imgSrc="mainImgSrc" @onClose="onLessClose" @onViewMore="onViewMore"/>
 </template>
@@ -27,6 +27,7 @@ export default defineComponent({
         const screenshotVisible = ref(false)
         const lessCompVisible = ref(false)
         const mainImgSrc = ref('')
+        const iframeWishlistWidth = ref(0)
 
         const onViewMore = () => {
             searchOverVisible.value = true
@@ -104,7 +105,7 @@ export default defineComponent({
                     searchOverVisible.value = false
                 }
                 if(data.popWidth){
-                    // $('#iframe-wishlist').width(data.popWidth)
+                    iframeWishlistWidth.value = data.popWidth
                 }
                 if(data.showToastMessage) {
                     console.log('data.message', data.message)
@@ -192,6 +193,7 @@ export default defineComponent({
         })
         
         return {
+            iframeWishlistWidth,
             onViewMore,
             onLessClose,
             mainImgSrc,

@@ -3,7 +3,7 @@
         <div style="position: relative;">
             <div class="header-circle"></div>
             <!-- <iframe id="iframe-wishlist" height="720" width="375" title="three part login"></iframe> -->
-            <iframe style="border: none;" id="iframe-wishlist" height="720" width="375" src="http://localhost:5173/plugin/home" title="three part login"></iframe>
+            <iframe style="border: none;" id="iframe-wishlist" height="720" :width="iframeWishlistWidth || 375" src="http://localhost:5173/plugin/home" title="three part login"></iframe>
         </div>
     </div>
 </template>
@@ -14,7 +14,8 @@ import { defineComponent, onMounted, reactive, toRefs } from "vue";
 export default defineComponent({
     name: 'loginDiv',
     props: {
-      iframeVisible: Boolean
+      iframeVisible: Boolean,
+      iframeWishlistWidth: Number,
     },
     components: {
     },
